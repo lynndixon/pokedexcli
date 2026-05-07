@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/lynndixon/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
-	Next     *string
-	Previous *string
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
 }
 
 func startRepl(cfg *config) {
@@ -48,7 +51,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(cfg *config) error
+	callback    func(*config) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -58,20 +61,20 @@ func getCommands() map[string]cliCommand {
 			description: "Displays a help message",
 			callback:    commandHelp,
 		},
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
 		"map": {
 			name:        "map",
 			description: "Get the next page of locations",
-			callback:    commandMap,
+			callback:    commandMapf,
 		},
 		"mapb": {
 			name:        "mapb",
 			description: "Get the previous page of locations",
 			callback:    commandMapb,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
 		},
 	}
 }
